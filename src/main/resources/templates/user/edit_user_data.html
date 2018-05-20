@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Settings</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div style="text-align: center">
+    <h1>Settings</h1>
+    <form th:action="@{/edit_my_data}" method="post">
+        <fieldset>
+            <legend>Edit user information</legend>
+            <p>
+                First Name: <br/>
+                <input type="text" th:value="${user.firstName}" name="firstName"/>
+            </p>
+            <p>
+                Last Name: <br/>
+                <input type="text" th:value="${user.lastName}" name="lastName"/>
+            </p>
+            <p>
+                Email: <br/>
+                <input type="text" th:value="${user.email}" name="email"/>
+            </p>
+            <input type="submit" value="Ok"/>
+
+        </fieldset>
+    </form>
+    <br/>
+    <form th:action="@{/change_password}" method="post">
+        <fieldset>
+            <legend>Change password</legend>
+            <p>
+                Input old password: <br/>
+                <input type="password" name="oldPassword"/>
+            </p>
+            <p>
+                Input new password: <br/>
+                <input type="password" name="newPassword"/>
+            </p>
+            <p>
+                Confirm new password: <br/>
+                <input type="password" name="confirmPassword"/>
+            </p>
+            <input type="submit" value="Ok"/>
+        </fieldset>
+    </form>
+    <br/>
+    <form th:action="@{/delete_account}" method="post">
+        <fieldset>
+            <legend>Delete account</legend>
+            <input type="submit" value="Delete my account"/>
+        </fieldset>
+    </form>
+</div>
+<div th:if="${errorMessage}" th:utext="${errorMessage}"
+     style="color:red;font-style:italic;">
+    ...
+</div>
+</body>
+</html>

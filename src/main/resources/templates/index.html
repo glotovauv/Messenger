@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div style="text-align: center">
+    <h1 style="font-family: 'Comic Sans MS'" th:text="#{mycontext.message}">Welcome</h1>
+    <!--<div class="lighter">                
+        <form>
+            <input type="text" class="search rounded" placeholder="Искать...">
+        </form>
+    </div>-->
+    <br/>
+    <p><img src="/img/image.png" width="300px" height="300px"></p>
+</div>
+
+</body>
+
+</html>

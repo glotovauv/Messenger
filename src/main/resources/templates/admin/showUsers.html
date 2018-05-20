@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Users list</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<h1>Users list:</h1>
+<ul>
+    <li th:each="user : ${users}">
+        <a th:href="@{'/admin/user_details/{id}'(id=${user.id})}" target="_blank"
+           th:text="|${user.login} (${user.firstName} ${user.lastName})|">
+        </a>
+    </li>
+</ul>
+
+</body>
+</html>

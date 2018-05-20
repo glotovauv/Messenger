@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>User talks</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div th:if="${#lists.isEmpty(user.talks)}">
+    <h2>You don't have any talks...</h2>
+</div>
+
+<div>
+    <p><a th:href="@{/create_talk}">Create new talk</a></p>
+</div>
+
+<div th:if="${not #lists.isEmpty(user.talks)}">
+    <h2 th:text="'You have ' + ${#lists.size(user.talks)} + ' talks:'">Hello!</h2>
+    <table border="1">
+        <tr>
+            <th style="width: 5%; text-align: center">#</th>
+            <th style="width: 55%; text-align: center">Name talk</th>
+            <th style="width: 20%; text-align: center">Owner</th>
+            <th style="width: 10%; text-align: center">Add users</th>
+            <th style="width: 10%; text-align: center">Delete</th>
+        </tr>
+        <tr th:each="talk, iterStat : ${talks}">
+            <td style="text-align: center" th:text="${iterStat.count}"></td>
+
+            <td style="text-align: center">
+                <a th:href="@{'/talk/{id}'(id=${talk.id})}" th:text="${talk.name}"></a>
+            </td>
+
+            <td style="text-align: center" th:text="|${talk.owner.firstName} ${talk.owner.lastName}|">...</td>
+
+            <td style="text-align: center">
+                <form th:action="@{/add_users}" method="post">
+                    <input type="hidden" id="id_talk" th:name="idTalk" th:value="${talk.id}"/>
+                    <input type="submit" value="+">
+                </form>
+            </td>
+
+            <td style="text-align: center">
+                <form th:action="@{/delete_talk}" method="post">
+                    <input type="hidden" id="id_talk" th:name="idTalk" th:value="${talk.id}"/>
+                    <input type="submit" value="x">
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

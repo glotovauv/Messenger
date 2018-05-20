@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="|${user.firstName} ${user.lastName}|">User</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div class="container-fluid">
+    <div class="col-sm-6">
+        <h2 th:text="|${user.firstName} ${user.lastName}|">Hello!</h2>
+        <p>
+            <b>Login: </b>
+            <span th:text="${user.login}"></span>
+        </p>
+        <p>
+            <b>Email: </b>
+            <span th:text="${user.email}"></span>
+        </p>
+
+        <div th:if="${user.login} != ${#request.userPrincipal.name}">
+            <div th:if="${inContact}== false">
+                <form th:action="@{/add_contact}" method="post">
+                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${user.id}"/>
+                    <input type="submit" value="Add in my contact">
+                </form>
+            </div>
+            <div th:if=" ${inContact} ">
+                <form th:action="@{/delete_contact}" method="post">
+                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${user.id}"/>
+                    <input type="submit" value="Delete from my contact">
+                </form>
+            </div>
+            <br/>
+            <form th:action="@{/send_message}" method="post">
+                <input type="hidden" id="id_contact" th:name="idUser" th:value="${user.id}"/>
+                <input type="submit" value="Write message">
+            </form>
+        </div>
+        <div th:if="${user.login} == ${#request.userPrincipal.name}">
+            <form th:action="@{/edit_my_data}" method="get">
+                <input type="submit" value="Edit my data">
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div>
+            <h3>User contacts:</h3>
+            <!--<div th:if="${#lists.isEmpty(user.talks)}">
+                <p>List of contacts is empty...</p>
+            </div>-->
+            <ul>
+                <li th:each="contact : ${user.userContacts}">
+                    <a th:href="@{'/user_page/{id}'(id=${contact.id})}" target="_blank"
+                       th:text="|${contact.firstName} ${contact.lastName}|">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--<div sec:authorize="hasRole('ADMIN')">
+    <a id="user-link" th:href="@{'/admin/'}">To administrator page</a>
+</div>-->
+
+</body>
+</html>

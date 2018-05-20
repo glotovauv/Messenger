@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registration</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div style="text-align: center">
+    <h1>Registration:</h1>
+    <form th:action="@{/registration}" th:object="${userForm}" method="post">
+        <p>
+            Login: <br/>
+            <input type="text" th:field="*{login}"/>
+        </p>
+        <p>
+            First Name: <br/>
+            <input type="text" th:field="*{firstName}"/>
+        </p>
+        <p>
+            Last Name: <br/>
+            <input type="text" th:field="*{lastName}"/>
+        </p>
+        <p>
+            Email: <br/>
+            <input type="text" th:field="*{email}"/>
+        </p>
+        <p>
+            Password: <br/>
+            <input type="password" th:field="*{password}"/>
+        </p>
+
+        <p>
+            Confirm password: <br/>
+            <input type="password" th:field="*{confirmPassword}"/>
+        </p>
+        <input type="submit" value="Ok"/>
+    </form>
+    <br/>
+</div>
+
+<div th:if="${errorMessage}" th:utext="${errorMessage}"
+     style="color:red;font-style:italic;">
+    ...
+</div>
+
+</body>
+</html>

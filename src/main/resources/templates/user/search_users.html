@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Search users</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div>
+    <h1>Search options:</h1>
+    <form th:action="@{/search}" method="post">
+        <label for="login">Login: </label>
+        <input id="login" type="text" th:name="login"/>
+        <br/>
+        <label for="firstName">First name: </label>
+        <input id="firstName" type="text" th:name="firstName"/>
+        <br/>
+        <label for="lastName">Last name: </label>
+        <input id="lastName" type="text" th:name="lastName"/>
+        <br/>
+        <input type="submit" value="Search">
+    </form>
+</div>
+
+<div th:if="${searched_users} != null">
+    <div th:each="contact : ${searched_users}">
+        <h2>
+            <a th:href="@{/user_page/{id}(id=${contact.id})}"
+               th:text="|${contact.firstName} ${contact.lastName} (${contact.login})|">
+            </a>
+        </h2>
+        <div th:if="${#request.userPrincipal.name} != ${contact.login}">
+            <div th:if="${not #lists.contains(user_contacts, contact.login)}">
+                <form th:action="@{/add_contact}" method="post">
+                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${contact.id}"/>
+                    <input type="submit" value="Add contact">
+                </form>
+            </div>
+            <div th:if="${#lists.contains(user_contacts, contact.login)}">
+                <form th:action="@{/delete_contact}" method="post">
+                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${contact.id}"/>
+                    <input type="submit" value="Delete contact">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

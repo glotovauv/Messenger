@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create talk</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<h1>Create talk:</h1>
+
+<form th:action="@{/create_talk}" th:object="${talkForm}" method="post">
+    <label>Name talk:</label>
+    <input type="text" th:field="*{name}"/>
+    <br/>
+    <p th:each="contact : ${users}" th:if="${contact.login} != ${owner_login}">
+            <input type="checkbox" th:field="*{users}" th:value="${contact.login}"
+                   th:text="| ${contact.firstName} ${contact.lastName}|">
+    </p>
+    <input type="submit" value="Ok"/>
+</form>
+
+<br/>
+</body>
+</html>

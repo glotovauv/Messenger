@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+
+<div style="text-align: center">
+    <h1>Login:</h1>
+    <form th:action="@{/j_spring_security_check}" method="post">
+        <p>
+            Login: <br/>
+            <input type="text" name="login" placeholder="Enter login"/>
+        </p>
+        <p>
+            Password: <br/>
+            <input type="password" name="password" placeholder="Enter password"/>
+        </p>
+        <input type="submit" value="Ok"/>
+    </form>
+    <div th:if="${param.error}" class="alert alert-danger form-sign">
+        Invalid username or password.
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success form-sign">
+        You have been logged out.
+    </div>
+</div>
+
+<br/>
+
+<div th:if="${errorMessage}" th:utext="${errorMessage}"
+     style="color:red;font-style:italic;">
+    ...
+</div>
+
+</body>
+</html>

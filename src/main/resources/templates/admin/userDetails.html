@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <title>User details</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+
+<div class="container-fluid">
+    <div class="col-sm-6">
+        <p>
+            <b>Name: </b>
+            <span th:text="${user.firstName}"></span>
+        </p>
+        <p>
+            <b>Family name: </b>
+            <span th:text="${user.lastName}"></span>
+        </p>
+        <p>
+            <b>Login: </b>
+            <span th:text="${user.login}"></span>
+        </p>
+        <p>
+            <b>Email: </b>
+            <span th:text="${user.email}"></span>
+        </p>
+        <div>
+            <p><b>User contacts:</b></p>
+            <ul>
+                <li th:each="contact : ${user.userContacts}" th:text="${contact.login}"></li>
+            </ul>
+        </div>
+
+        <div>
+            <p><b>User talks:</b></p>
+            <ul>
+                <li th:each="talk : ${user.talks}">
+                    <a th:href="@{'/talk/{id}'(id=${talk.id})}" th:text="${talk.name}"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div th:if="${user.active}">
+            <span style="color: green">User is active!</span>
+            <form th:action="@{/admin/lock_user}" method="post">
+                <input type="hidden" name="idUser" th:value="${user.id}"/>
+                <input type="submit" value="Lock user"/>
+            </form>
+        </div>
+        <div th:if="${user.active} == false">
+            <span style="color: red">User locked!</span>
+            <form th:action="@{/admin/unlock_user}" method="post">
+                <input type="hidden" name="idUser" th:value="${user.id}"/>
+                <input type="submit" value="Unlock user"/>
+            </form>
+        </div>
+        <div>
+            <h3>User roles:</h3>
+            <ul>
+                <li th:each="role : ${user.roles}">
+                    <label for="delete_role" th:text="${role.authority}"></label>
+                    <!--th:if="${role.authority} != 'ROLE_USER' and ${role.authority} != 'ROLE_ADMIN'"-->
+                    <div >
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <form th:action="@{/admin/delete_role}" method="post">
+                                <input type="hidden" th:name="idUser" th:value="${user.id}"/>
+                                <input type="hidden" th:name="authority" th:value="${role.authority}"/>
+                                <input type="submit" id="delete_role" value="Delete role"/>
+                            </form>
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+        <div sec:authorize="hasRole('ADMIN')">
+            <form th:action="@{/admin/grant_role}" method="post">
+                <input type="hidden" th:name="idUser" th:value="${user.id}"/>
+                <label for="grant">Grant role:</label>
+                <select id="grant" name="authority">
+                    <option value="ROLE_ADMIN">Administrator</option>
+                    <option value="ROLE_SUPER_USER">Super user</option>
+                </select>
+                <br/>
+                <input type="submit" value="Grant role">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
