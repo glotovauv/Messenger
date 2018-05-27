@@ -14,7 +14,6 @@ var deleteAddress = "/app/talk/" + idTalk + "/delete_message";
 var fileName = "";
 var file = null;
 var stompClient = null;
-//var fileContent = "";
 
 function connect() {
     var socket = new SockJS("/messenger");

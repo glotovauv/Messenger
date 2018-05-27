@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Error</title>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+</head>
+<body>
+<div th:replace="header :: page"></div>
+<div class="panel panel-danger text-center center-block" style="width: 60%">
+    <div class="panel-heading">
+        <span th:text="|Error ${code}|"></span>
+    </div>
+    <div class="panel-body">
+        <h3 th:text="${errorMessage}"></h3>
+        <br/>
+        <a class="btn btn-default" th:href="@{'/home_page'}">Go to my page</a>
+    </div>
+</div>
+</body>
+</html>
