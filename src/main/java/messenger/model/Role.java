@@ -16,6 +16,7 @@ public class Role implements GrantedAuthority {
 
     @NotNull
     @Size(min = 3, max = 30)
+    @Column(unique = true)
     private String authority;
 
     protected Role(){}

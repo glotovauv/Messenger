@@ -31,12 +31,12 @@ public class User implements UserDetails {
     private String hashPassword;
 
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 20)
     @Column(name = "first_name")
     private String firstName;
 
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 20)
     @Column(name = "last_name")
     private String lastName;
 
@@ -48,11 +48,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean active;
 
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, mappedBy = "users")
     private Set<Talk> talks;
 
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinTable(name = "contacts",
             joinColumns = @JoinColumn(name = "id_user"),

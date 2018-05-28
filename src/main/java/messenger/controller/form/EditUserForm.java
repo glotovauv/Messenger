@@ -6,13 +6,13 @@ import javax.validation.constraints.Size;
 
 public class EditUserForm {
     @NotNull
-    @Size(min = 1, max = 30,
-            message = "First name must have between 1 and 30 symbols")
+    @Size(min = 1, max = 20,
+            message = "First name must have between 1 and 20 symbols")
     private String firstName;
 
     @NotNull
-    @Size(min = 1, max = 30,
-            message = "Last name must have between 1 and 30 symbols")
+    @Size(min = 1, max = 20,
+            message = "Last name must have between 1 and 20 symbols")
     private String lastName;
 
     @NotNull
