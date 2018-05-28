@@ -192,7 +192,7 @@ function deleteFile(event) {
 
 function sendMessage(event) {
     var messageContent = messageInput.value.trim();
-    if (messageContent && stompClient) {
+     if ((messageContent || file) && stompClient) {
         var messageForm = {
             typeMessage: "SEND",
             message: {
