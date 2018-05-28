@@ -10,14 +10,15 @@
 </head>
 <body>
 <div th:replace="header :: page"></div>
-<h1>Users list:</h1>
-<ul>
-    <li th:each="user : ${users}">
-        <a th:href="@{'/admin/user_details/{id}'(id=${user.id})}" target="_blank"
-           th:text="|${user.login} (${user.firstName} ${user.lastName})|">
+
+<div class="list-group center-block text-center" style="width: 30%">
+    <h2 style="color: #0077ff">Users list</h2>
+    <div th:each="user : ${users}">
+        <a class="list-group-item"  th:href="@{'/admin/user_details/{id}'(id=${user.id})}"
+           target="_blank" th:text="|${user.firstName} ${user.lastName} (${user.login})|">
         </a>
-    </li>
-</ul>
+    </div>
+</div>
 
 </body>
 </html>

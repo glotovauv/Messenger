@@ -34,7 +34,7 @@ public interface TalkService {
 
     List<Message> getMessages(long idTalk);
 
-    void deleteMessageById(String idMessage);
+    boolean deleteMessageById(String idMessage, long idUser);
 
     void deleteTalk(long idTalk);
 

@@ -47,10 +47,24 @@ spring:
 
 ---
 
+# ===============================
+# HTTPS
+# ===============================
+
+server:
+    port: 8443
+    ssl.key-store: classpath:keystore.p12
+    ssl.key-store-password: 123456
+    ssl.keyStoreType: PKCS12
+    ssl.keyAlias: tomcat
+---
+
+# ===============================
+# Limits
+# ===============================
+
 spring:
     servlet:
         multipart:
              max-file-size: 128KB
              max-request-size: 128KB
-
----

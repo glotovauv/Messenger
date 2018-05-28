@@ -1,13 +1,15 @@
 package messenger.controller;
 
 import messenger.controller.form.MessageForm;
-import messenger.controller.form.TalkForm;
+import messenger.exception.ResourceNotFoundException;
 import messenger.model.Author;
 import messenger.model.Message;
-import messenger.model.Talk;
 import messenger.model.User;
 import messenger.services.TalkService;
 import messenger.services.UserService;
+import netscape.security.ForbiddenTargetException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -20,24 +22,23 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 
 @Controller
 public class MessageController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private UserService userService;
 
@@ -46,9 +47,12 @@ public class MessageController {
 
     @MessageMapping("/talk/{id}/send_message")
     @SendTo("/topic/talk/{id}")
-    public MessageForm sendMessage(@Payload MessageForm messageForm, @DestinationVariable("id") long idTalk) {
-        System.out.println("in MessageMapping");
-        User author = userService.getMainUserInfo(messageForm.getMessage().getAuthor().getId());
+    public MessageForm sendMessage(@Valid @Payload MessageForm messageForm, Principal principal, @DestinationVariable("id") long idTalk) {
+        long idAuthor = messageForm.getMessage().getAuthor().getId();
+        User author = (User) ((Authentication) principal).getPrincipal();
+        if (author.getId() != idAuthor) {
+            author = userService.getMainUserInfo(idAuthor);
+        }
 
         Message message = messageForm.getMessage();
         message.setAuthor(new Author(author));
@@ -59,8 +63,17 @@ public class MessageController {
 
     @MessageMapping("/talk/{id}/delete_message")
     @SendTo("/topic/talk/{id}")
-    public MessageForm deleteMessage(@Payload MessageForm messageForm, @DestinationVariable("id") long idTalk) {
-        talkService.deleteMessageById(messageForm.getMessage().getId());
+    public MessageForm deleteMessage(@NotNull @Payload MessageForm messageForm,
+                                     @DestinationVariable("id") long idTalk,
+                                     Principal principal) {
+        if (messageForm.getMessage() != null) {
+            User author = (User) ((Authentication) principal).getPrincipal();
+            if (!talkService.deleteMessageById(messageForm.getMessage().getId(), author.getId())) {
+                logger.warn("User with id = {} can delete message with id = {} in talk with id = {} without permission",
+                        author.getId(), idTalk, messageForm.getMessage().getId());
+                throw new ForbiddenTargetException("Only author can delete message");
+            }
+        }
         return messageForm;
     }
 
@@ -73,7 +86,9 @@ public class MessageController {
         try {
             inputStream = new InputStreamResource(new FileInputStream(file));
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            logger.error("Resource for message with id = {} in talk with id = {} not found",
+                    idMessage, idTalk);
+            throw new ResourceNotFoundException();
         }
         String mimeType = request.getServletContext().getMimeType(file.getAbsolutePath());
         MediaType mediaType;

@@ -25,7 +25,7 @@ public interface UserService extends UserDetailsService {
 
     List<User> getAllUsers();
 
-    boolean addUserContact(long idUser, long idContactUser);
+    User addUserContact(long idUser, long idContactUser);
 
     void deleteUserContact(long idUser, long idContactUser);
 
@@ -38,6 +38,8 @@ public interface UserService extends UserDetailsService {
     boolean isUserInTalk(User user, long idTalk);
 
     boolean isUserInContact(User user, long idUserContact);
+
+    boolean isUserInRole(User user, RoleType roleType);
 
     Set<Talk> getUserTalks(long idUser);
 }

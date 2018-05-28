@@ -2,73 +2,112 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title th:text="${talk.name}">Talk</title>
     <link rel="stylesheet" type="text/css"
-          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="/app.js" defer></script>
+    <script src="/webjars/jquery/3.2.1/jquery.min.js" defer></script>
+    <script src="/webjars/bootstrap/3.3.7/js/modal.js" defer></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js" defer></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js" defer></script>
+    <script src="/js/messages.js" defer></script>
 </head>
 <body>
 <div th:replace="header :: page"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 center-block text-center">
+            <p><img src="/img/messenger.png" class="img-circle" width="200px" height="200px"></p>
+            <div class="list-group">
+                <div class="list-group-item list-group-item-info">Users in talk</div>
+                <div th:each="spiker : ${talk.users}">
+                    <a th:href="@{'/user_page/{id}'(id=${spiker.id})}" target="_blank" class="list-group-item"
+                       th:text="|${spiker.firstName} ${spiker.lastName} (${spiker.login})| +
+                       ((${spiker.login} == ${talk.owner.login}) ? ' - owner' : '')">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 list-group">
+            <h1 class="list-group-item" style="text-align: center; color: #0077ff;" th:text="|${talk.name}|"></h1>
+            <div id="messageArea" class="list-group-item">
+                <div th:each="message : ${messages}" th:id="${message.id}">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <dt style="color: #007fff; font-size: 16px"
+                                th:text="|${message.author.firstName} ${message.author.lastName}|">
+                            </dt>
+                        </div>
+                        <div class="col-sm-5">
+                            <dd style="color: gray" th:text="${#dates.format(message.date, 'd MMM yyyy HH:mm')}"></dd>
+                        </div>
+                        <div th:if="${user.id} == ${message.author.id}" class="col-sm-1">
+                            <form th:action="@{/delete_message}" method="post" name="deleteForm">
+                                <input type="hidden" th:name="idMessage" th:value="${message.id}"/>
+                                <input type="hidden" th:name="idTalk" th:value="${talk.id}"/>
+                                <button type="submit" class="close" name="delete">&times;</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <dd style="color: black" th:text="${message.text}">...</dd>
+                        </div>
+                    </div>
+                    <div class="row"
+                         th:if="(${message.nameAttachedFile} != null) and (${message.nameAttachedFile} != '')">
+                        <form th:action="@{/download_file}" method="post" name="downloadForm">
+                            <input type="hidden" th:name="idTalk" th:value="${talk.id}"/>
+                            <input type="hidden" th:name="idMessage" th:value="${message.id}"/>
+                            <button type="submit" class="btn btn-link" name="download"
+                                    th:text="|  File: ${message.nameAttachedFile}|"></button>
+                        </form>
+                    </div>
+                    <br/>
+                </div>
+            </div>
 
-<!--<a th:href="@{/user_page/{id}(id=${user.id})}">Return to user page</a>-->
-
-<h1 th:text="|${user.firstName} ${user.lastName}|">Hello!</h1>
-<h1 th:text="|Name talk: ${talk.name}|">Hello!</h1>
-
-<div>
-    <details>
-        <summary>Show users in talk</summary>
-        <ul>
-            <li th:each="spiker : ${talk.users}"
-                th:text="${spiker.firstName} + ' ' + ${spiker.lastName} + ' ' +
-                ((${spiker.login} == ${talk.owner.login}) ? '(owner)' : '')">
-            </li>
-        </ul>
-    </details>
-    <br/>
-    <!--<h1 th:text="${#s}"></h1>-->
-</div>
-
-<div id="messageArea">
-    <div th:each="message : ${messages}">
-        <fieldset th:id="${message.id}">
-            <legend th:text="${#dates.format(message.date, 'd MMM yyyy HH:mm')}"></legend>
-            <h3 th:text="|${message.author.firstName} ${message.author.lastName}:|">...</h3>
-            <p th:text="${message.text}">...</p>
-            <div th:if="(${message.nameAttachedFile} != null) and (${message.nameAttachedFile} != '')">
-                <form th:action="@{/download_file}" method="post" name="downloadForm">
-                    <input type="hidden" th:name="idTalk" th:value="${talk.id}"/>
-                    <input type="hidden" th:name="idMessage" th:value="${message.id}"/>
-                    <p><input type="submit" value="Download file" name="download"
-                              th:text="' ' + ${message.nameAttachedFile}"></p>
+            <div class="list-group-item">
+                <form id="messageForm" th:action="@{/write_message}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="id_talk" th:name="id" th:value="${talk.id}"/>
+                    <input type="hidden" id="id_user" th:name="id" th:value="${user.id}"/>
+                    <textarea id="message" name="message" class="form-control" style="margin-top: 3px"
+                              placeholder="Input message..."></textarea>
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-sm-8">
+                            <div class="panel panel-default hidden" id="panel-delete-file" style="margin-bottom: -5px">
+                                <span style="text-align: left; margin-left: 10px" id="view-name-file">File</span>
+                                <button type="button" id="file_delete" class="close text-left">&times;</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            <button type="submit" class="btn btn-sm btn-default">Send</button>
+                            <label class="btn btn-sm btn-default">
+                                Browse <input type="file" id="file_input" name="file" class="hidden">
+                            </label>
+                        </div>
+                    </div>
                 </form>
             </div>
-            <div th:if="${user.id} == ${message.author.id}">
-                <form th:action="@{/delete_message}" method="post" name="deleteForm">
-                    <input type="hidden" th:name="idMessage" th:value="${message.id}"/>
-                    <input type="hidden" th:name="idTalk" th:value="${talk.id}"/>
-                    <p><input type="submit" value="Delete message" name="delete"></p>
-                </form>
+        </div>
+        <button type="button" class="btn btn-default hidden" id="modalButton"
+                data-toggle="modal" data-target="#myModal">
+        </button>
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog modal-sm" style="top: 25%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h3 class="modal-title">File is very big!</h3>
+                    </div>
+                    <div class="modal-body">
+                        <h5>Limit on file size: 128 KB</h5>
+                    </div>
+                </div>
             </div>
-        </fieldset>
-        <br/>
+        </div>
     </div>
 </div>
-
-<div>
-    <form id="messageForm" th:action="@{/write_message}" method="post" enctype="multipart/form-data">
-        <input type="hidden" id="id_talk" th:name="id" th:value="${talk.id}"/>
-        <input type="hidden" id="id_user" th:name="id" th:value="${user.id}"/>
-        <p><label for="message">Input your message:<label></p>
-        <textarea id="message" name="message" rows="5" cols="50"></textarea>
-        <p><input type="file" id="file_input" name="file"></p>
-        <input type="submit" value="Send">
-    </form>
-</div>
-
 </body>
 </html>

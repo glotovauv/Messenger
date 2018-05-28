@@ -1,4 +1,4 @@
 package messenger.exception;
 
-public class ResourceNotFoundException {
+public class ResourceNotFoundException extends RuntimeException {
 }

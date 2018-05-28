@@ -10,42 +10,60 @@
 </head>
 <body>
 <div th:replace="header :: page"></div>
-<div style="text-align: center">
-    <h1>Registration:</h1>
+<div class="form-group text-center">
+    <h1 style="color: #0077ff">Registration</h1>
+    <br/>
     <form th:action="@{/registration}" th:object="${userForm}" method="post">
-        <p>
-            Login: <br/>
-            <input type="text" th:field="*{login}"/>
-        </p>
-        <p>
-            First Name: <br/>
-            <input type="text" th:field="*{firstName}"/>
-        </p>
-        <p>
-            Last Name: <br/>
-            <input type="text" th:field="*{lastName}"/>
-        </p>
-        <p>
-            Email: <br/>
-            <input type="text" th:field="*{email}"/>
-        </p>
-        <p>
-            Password: <br/>
-            <input type="password" th:field="*{password}"/>
-        </p>
+        <label for="login" style="font: caption">Login: </label>
+        <input type="text" class="form-control center-block" style="width: 300px"
+               name="login" id="login" th:field="*{login}" th:value="${param.login}"/>
+        <div th:each="error : ${#fields.errors('login')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
 
-        <p>
-            Confirm password: <br/>
-            <input type="password" th:field="*{confirmPassword}"/>
-        </p>
-        <input type="submit" value="Ok"/>
+        <label for="firstName" style="font: caption">First name: </label>
+        <input type="text" class="form-control center-block" style="width: 300px"
+               name="editUserData.firstName" id="firstName" th:field="*{editUserData.firstName}" th:value="${param.firstName}"/>
+        <div th:each="error : ${#fields.errors('editUserData.firstName')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
+
+        <label for="lastName" style="font: caption">Last name: </label>
+        <input type="text" class="form-control center-block" style="width: 300px"
+               name="editUserData.lastName" id="lastName" th:field="*{editUserData.lastName}" th:value="${param.lastName}"/>
+        <div th:each="error : ${#fields.errors('editUserData.lastName')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
+
+        <label for="email" style="font: caption">Email: </label>
+        <input type="text" class="form-control center-block" style="width: 300px"
+               name="editUserData.email" id="email" th:field="*{editUserData.email}" th:value="${param.email}"/>
+        <div th:each="error : ${#fields.errors('editUserData.email')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
+
+        <label for="password" style="font: caption">Password: </label>
+        <input type="password" class="form-control center-block" style="width: 300px"
+               name="password" id="password" th:field="*{password}"/>
+        <div th:each="error : ${#fields.errors('password')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
+
+        <label for="confirmPassword" style="font: caption">Confirm password: </label>
+        <input type="password" class="form-control center-block" style="width: 300px"
+               name="confirmPassword" id="confirmPassword" th:field="*{confirmPassword}"/>
+        <div th:each="error : ${#fields.errors('confirmPassword')}">
+            <span style="color:red;font-style:italic;" th:text="${error}"></span>
+        </div>
+        <br/>
+        <button type="submit" style="width: 80px" class="btn btn-info">Ok</button>
     </form>
     <br/>
-</div>
-
-<div th:if="${errorMessage}" th:utext="${errorMessage}"
-     style="color:red;font-style:italic;">
-    ...
 </div>
 
 </body>

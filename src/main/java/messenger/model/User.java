@@ -5,6 +5,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,18 +21,27 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotNull
+    @Size(min = 1, max = 30)
     @Column(unique = true, nullable = false)
     private String login;
 
+    @NotNull
     @Column(name = "hash_password", nullable = false)
     private String hashPassword;
 
+    @NotNull
+    @Size(min = 1, max = 30)
     @Column(name = "first_name")
     private String firstName;
 
+    @NotNull
+    @Size(min = 1, max = 30)
     @Column(name = "last_name")
     private String lastName;
 
+    @NotNull
+    @Email
     @Column(unique = true)
     private String email;
 

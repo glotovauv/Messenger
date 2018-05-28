@@ -1,71 +1,93 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <title th:text="|${user.firstName} ${user.lastName}|">User</title>
     <link rel="stylesheet" type="text/css"
           href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
+    <script src="/js/contacts.js" defer></script>
 </head>
 <body>
 <div th:replace="header :: page"></div>
 <div class="container-fluid">
-    <div class="col-sm-6">
-        <h2 th:text="|${user.firstName} ${user.lastName}|">Hello!</h2>
-        <p>
-            <b>Login: </b>
-            <span th:text="${user.login}"></span>
-        </p>
-        <p>
-            <b>Email: </b>
-            <span th:text="${user.email}"></span>
-        </p>
-
-        <div th:if="${user.login} != ${#request.userPrincipal.name}">
-            <div th:if="${inContact}== false">
-                <form th:action="@{/add_contact}" method="post">
-                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${user.id}"/>
-                    <input type="submit" value="Add in my contact">
+    <div class="row">
+        <div class="col-sm-4 text-center">
+            <div th:if="${user.active}">
+                <img src="/img/user.png" width="240px" height="240px">
+            </div>
+            <div th:if="not ${user.active}">
+                <img src="/img/delete.png" width="250px" height="230px">
+            </div>
+            <br/> <br/>
+            <div th:if="(${user.login} != ${#request.userPrincipal.name}) and (${user.active})">
+                <div th:if="${inContact}== false">
+                    <form th:action="@{/add_contact}" method="post" name="changeContact">
+                        <input type="hidden" th:name="idContact" th:value="${user.id}"/>
+                        <button type="submit" class="btn btn-success" name="button" value="add">
+                            Add in my contact
+                        </button>
+                    </form>
+                </div>
+                <div th:if=" ${inContact}">
+                    <form th:action="@{/delete_contact}" method="post" name="changeContact">
+                        <input type="hidden" th:name="idContact" th:value="${user.id}"/>
+                        <button type="submit" class="btn btn-warning" name="button" value="delete">
+                            Delete from my contact
+                        </button>
+                    </form>
+                </div>
+                <br/>
+                <form th:action="@{/send_message}" method="post">
+                    <input type="hidden" th:name="idUser" th:value="${user.id}"/>
+                    <button type="submit" class="btn btn-success">Write message</button>
                 </form>
             </div>
-            <div th:if=" ${inContact} ">
-                <form th:action="@{/delete_contact}" method="post">
-                    <input type="hidden" id="id_contact" th:name="idContact" th:value="${user.id}"/>
-                    <input type="submit" value="Delete from my contact">
+            <div th:if="${user.login} == ${#request.userPrincipal.name}">
+                <form th:action="@{/edit_my_data}" method="get">
+                    <button type="submit" class="btn btn-info">Edit my data</button>
                 </form>
             </div>
-            <br/>
-            <form th:action="@{/send_message}" method="post">
-                <input type="hidden" id="id_contact" th:name="idUser" th:value="${user.id}"/>
-                <input type="submit" value="Write message">
-            </form>
+            <div sec:authorize="hasAnyRole('ADMIN', 'SUPER_USER')">
+                <br/>
+                <a th:href="@{'/admin/user_details/{id}'(id=${user.id})}"
+                   class="btn btn-info">Show details</a>
+            </div>
         </div>
-        <div th:if="${user.login} == ${#request.userPrincipal.name}">
-            <form th:action="@{/edit_my_data}" method="get">
-                <input type="submit" value="Edit my data">
-            </form>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div>
-            <h3>User contacts:</h3>
-            <!--<div th:if="${#lists.isEmpty(user.talks)}">
-                <p>List of contacts is empty...</p>
-            </div>-->
-            <ul>
-                <li th:each="contact : ${user.userContacts}">
-                    <a th:href="@{'/user_page/{id}'(id=${contact.id})}" target="_blank"
-                       th:text="|${contact.firstName} ${contact.lastName}|">
-                    </a>
-                </li>
-            </ul>
+        <div class="col-sm-6">
+            <h1 style="color: #0077ff;" th:text="|${user.firstName} ${user.lastName}|"></h1>
+            <div th:if="not ${user.active}" class="col-sm-5">
+                <br/>
+                <div class="panel panel-danger ">
+                    <div class="panel-heading text-center">
+                        User was deleted!
+                    </div>
+                </div>
+            </div>
+            <div class="well" th:if="${user.active}">
+                <b>Login: </b>
+                <span th:text="${user.login}"></span>
+                <br/>
+                <b>Email: </b>
+                <span th:text="${user.email}"></span>
+            </div>
+            <div th:if="${user.active}">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-info">User contacts</div>
+                    <div th:each="contact : ${user.userContacts}">
+                        <a th:href="@{'/user_page/{id}'(id=${contact.id})}" target="_blank" class="list-group-item"
+                           th:text="|${contact.firstName} ${contact.lastName} (${contact.login})|">
+                        </a>
+                    </div>
+                    <div th:if="${#lists.isEmpty(user.userContacts)}">
+                        <div class="list-group-item">List of contacts is empty...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<!--<div sec:authorize="hasRole('ADMIN')">
-    <a id="user-link" th:href="@{'/admin/'}">To administrator page</a>
-</div>-->
-
 </body>
 </html>

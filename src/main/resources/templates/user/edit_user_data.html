@@ -6,61 +6,136 @@
     <title>Settings</title>
     <link rel="stylesheet" type="text/css"
           href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script src="/webjars/jquery/3.2.1/jquery.min.js" defer></script>
+    <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js" defer></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
 </head>
 <body>
 <div th:replace="header :: page"></div>
-<div style="text-align: center">
-    <h1>Settings</h1>
-    <form th:action="@{/edit_my_data}" method="post">
-        <fieldset>
-            <legend>Edit user information</legend>
-            <p>
-                First Name: <br/>
-                <input type="text" th:value="${user.firstName}" name="firstName"/>
-            </p>
-            <p>
-                Last Name: <br/>
-                <input type="text" th:value="${user.lastName}" name="lastName"/>
-            </p>
-            <p>
-                Email: <br/>
-                <input type="text" th:value="${user.email}" name="email"/>
-            </p>
-            <input type="submit" value="Ok"/>
+<div class="form-group text-center center-block">
+    <h1 style="color: forestgreen">Settings</h1>
+    <div class="row">
+        <div class="col-sm-6  center-block text-center">
+            <form th:action="@{/edit_my_data}" th:object="${userForm}" method="post">
+                <fieldset>
+                    <legend>Edit user information</legend>
+                    <div th:if="${changeDataSuccess}" class="alert alert-success center-block" style="width: 80%">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Success!</strong> Your change was saved.
+                    </div>
+                    <input type="hidden" id="errors" th:value="${errors}">
+                    <label for="firstName" style="font: caption">First name: </label>
+                    <input type="hidden" id="user-firstName" th:value="${user.firstName}"/>
+                    <input type="text" class="form-control center-block" style="width: 300px"
+                           name="firstName" th:field="*{firstName}" id="firstName" th:value="${param.firstName}"/>
+                    <div th:each="error : ${#fields.errors('firstName')}">
+                        <span style="color:red;font-style:italic;" th:text="${error}"></span>
+                    </div>
+                    <br/>
 
-        </fieldset>
-    </form>
-    <br/>
-    <form th:action="@{/change_password}" method="post">
-        <fieldset>
-            <legend>Change password</legend>
-            <p>
-                Input old password: <br/>
-                <input type="password" name="oldPassword"/>
-            </p>
-            <p>
-                Input new password: <br/>
-                <input type="password" name="newPassword"/>
-            </p>
-            <p>
-                Confirm new password: <br/>
-                <input type="password" name="confirmPassword"/>
-            </p>
-            <input type="submit" value="Ok"/>
-        </fieldset>
-    </form>
-    <br/>
-    <form th:action="@{/delete_account}" method="post">
+                    <label for="lastName" style="font: caption">Last name: </label>
+                    <input type="hidden" id="user-lastName" th:value="${user.lastName}"/>
+                    <input type="text" class="form-control center-block" style="width: 300px"
+                           name="lastName" id="lastName" th:field="*{lastName}" th:value="${param.lastName}"/>
+                    <div th:each="error : ${#fields.errors('lastName')}">
+                        <span style="color:red;font-style:italic;" th:text="${error}"></span>
+                    </div>
+                    <br/>
+
+                    <label for="email" style="font: caption">Email: </label>
+                    <input type="hidden" id="user-email" th:value="${user.email}"/>
+                    <input type="text" class="form-control center-block" style="width: 300px"
+                           name="email" id="email" th:field="*{email}" th:value="${param.email}"/>
+                    <div th:each="error : ${#fields.errors('email')}">
+                        <span style="color:red;font-style:italic;" th:text="${error}"></span>
+                    </div>
+                    <br/>
+                    <button type="submit" style="width: 80px" class="btn btn-success">Ok</button>
+                </fieldset>
+            </form>
+            <br/>
+        </div>
+        <div class="col-sm-6  center-block text-center">
+            <form th:action="@{/change_password}" method="post">
+                <fieldset>
+                    <legend>Change password</legend>
+                    <div th:if="${changePasswordSuccess}" class="alert alert-success center-block" style="width: 80%">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Success!</strong> Your password was changed.
+                    </div>
+
+                    <label for="oldPassword" style="font: caption">Input old password: </label>
+                    <input type="password" class="form-control center-block" style="width: 300px"
+                           name="oldPassword" id="oldPassword"/>
+                    <div>
+                        <span style="color:red;font-style:italic;" th:text="${incorrectOldPassword}"></span>
+                    </div>
+                    <br/>
+
+                    <label for="newPassword" style="font: caption">Input new password: </label>
+                    <input type="password" class="form-control center-block" style="width: 300px"
+                           name="newPassword" id="newPassword"/>
+                    <div>
+                        <span style="color:red;font-style:italic;" th:text="${incorrectNewPassword}"></span>
+                    </div>
+                    <br/>
+
+                    <label for="confirmPassword" style="font: caption">Confirm new password: </label>
+                    <input type="password" class="form-control center-block" style="width: 300px"
+                           name="confirmPassword" id="confirmPassword"/>
+                    <div>
+                        <span style="color:red;font-style:italic;" th:text="${notEqualsPassword}"></span>
+                    </div>
+                    <br/>
+                    <button type="submit" style="width: 80px" class="btn btn-success">Ok</button>
+                </fieldset>
+            </form>
+            <br/>
+        </div>
+    </div>
+    <div class="row">
         <fieldset>
             <legend>Delete account</legend>
-            <input type="submit" value="Delete my account"/>
+            <button type="button" class="btn btn-danger"
+                    data-toggle="modal" data-target="#myModal">
+                Delete my account
+            </button>
         </fieldset>
-    </form>
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-sm" style="top: 25%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Confirm action</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete your account?</p>
+                        <form th:action="@{/delete_account}" method="post" class="form-inline">
+                            <button type="submit" class="btn btn-danger">Yes</button>
+                            <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
 </div>
-<div th:if="${errorMessage}" th:utext="${errorMessage}"
-     style="color:red;font-style:italic;">
-    ...
-</div>
+<script>
+    function setElement(nameElement, nameUserData) {
+        var element = document.getElementById(nameElement);
+        var userData = document.getElementById(nameUserData);
+        element.setAttribute("value", userData.getAttribute("value"));
+    }
+
+    if (document.getElementById("errors").getAttribute("value") === "false") {
+        setElement("firstName", "user-firstName");
+        setElement("lastName", "user-lastName");
+        setElement("email", "user-email");
+    }
+</script>
 </body>
 </html>

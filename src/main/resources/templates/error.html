@@ -12,11 +12,13 @@
 <div th:replace="header :: page"></div>
 <div class="panel panel-danger text-center center-block" style="width: 60%">
     <div class="panel-heading">
-        <span th:text="|Error ${code}|"></span>
+        <span th:text="|Error ${#response.status}|"></span>
     </div>
     <div class="panel-body">
-        <h3 th:text="${errorMessage}"></h3>
-        <br/>
+        <div th:if="${errorMessage}">
+            <h3 th:text="${errorMessage}"></h3>
+            <br/>
+        </div>
         <a class="btn btn-default" th:href="@{'/home_page'}">Go to my page</a>
     </div>
 </div>

@@ -1,8 +1,16 @@
 package messenger.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Author {
+    @NotNull
     private long id;
+
+    @Size(min = 1, max = 30, message = "First name must have between 1 and 30 symbols")
     private String firstName;
+
+    @Size(min = 1, max = 30, message = "Last name must have between 1 and 30 symbols")
     private String lastName;
 
     protected Author() {

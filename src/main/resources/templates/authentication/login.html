@@ -11,33 +11,22 @@
 <body>
 <div th:replace="header :: page"></div>
 
-<div style="text-align: center">
-    <h1>Login:</h1>
-    <form th:action="@{/j_spring_security_check}" method="post">
-        <p>
-            Login: <br/>
-            <input type="text" name="login" placeholder="Enter login"/>
-        </p>
-        <p>
-            Password: <br/>
-            <input type="password" name="password" placeholder="Enter password"/>
-        </p>
-        <input type="submit" value="Ok"/>
-    </form>
-    <div th:if="${param.error}" class="alert alert-danger form-sign">
+
+<div class="form-group text-center">
+    <h1 style="color: green">Login</h1>
+    <br/>
+    <div th:if="${param.error}" class="alert alert-danger center-block" style="width: 40%">
         Invalid username or password.
     </div>
-    <div th:if="${param.logout}" class="alert alert-success form-sign">
-        You have been logged out.
-    </div>
+    <form th:action="@{/j_spring_security_check}" method="post">
+        <label for="login" style="font: caption">Login: </label>
+        <input type="text" class="form-control center-block" style="width: 300px" name="login" id="login"/>
+        <br/>
+        <label for="password" style="font: caption">Password: </label>
+        <input type="password" class="form-control center-block" style="width: 300px" name="password" id="password"/>
+        <br/>
+        <button type="submit" style="width: 80px" class="btn btn-success">Ok</button>
+    </form>
 </div>
-
-<br/>
-
-<div th:if="${errorMessage}" th:utext="${errorMessage}"
-     style="color:red;font-style:italic;">
-    ...
-</div>
-
 </body>
 </html>

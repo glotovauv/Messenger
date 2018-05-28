@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
@@ -20,8 +22,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    public void registerGlobalAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(bCryptPasswordEncoder());
@@ -35,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // указываем правила запросов
                 // по которым будет определятся доступ к ресурсам и остальным данным
                 .authorizeRequests()
-                .antMatchers("/img/**", "/css/**", "/webjars/**", "/", "/index", "/registration").permitAll()
+                .antMatchers("/img/**", "/css/**", "/js/**", "/webjars/**", "/", "/index", "/registration").permitAll()
                 .antMatchers("/admin/grant_role").access("hasRole('ADMIN')")
                 .antMatchers("/admin/delete_role").access("hasRole('ADMIN')")
                 .antMatchers("/admin/**").access("hasAnyRole('ADMIN', 'SUPER_USER')")

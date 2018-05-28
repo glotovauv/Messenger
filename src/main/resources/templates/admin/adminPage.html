@@ -2,20 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Administrator page</title>
     <link rel="stylesheet" type="text/css"
-          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+          href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/theme.css}"/>
 </head>
 <body>
 <div th:replace="header :: page"></div>
-<h1 th:text="${#request.userPrincipal.getName()}">Welcome</h1>
 
-<p>This is administrator page!</p>
-
-<a th:href="@{'/admin/show_users'}">Show list users</a>
-
+<div class="panel panel-info text-center center-block" style="width: 60%">
+    <div class="panel-heading">
+        This is administrator page!
+    </div>
+    <div class="panel-body">
+        <h3>Here you can manage users</h3>
+        <br/>
+        <a class="btn btn-info" th:href="@{'/admin/show_users'}">Go to list users</a>
+    </div>
+</div>
 </body>
 
 </html>

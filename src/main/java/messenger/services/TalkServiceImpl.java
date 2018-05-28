@@ -7,6 +7,8 @@ import messenger.repository.MessageRepository;
 import messenger.repository.TalkRepository;
 import messenger.repository.UserRepository;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import java.util.Set;
 
 @Service
 public class TalkServiceImpl implements TalkService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private MessageRepository messageRepository;
@@ -131,9 +134,7 @@ public class TalkServiceImpl implements TalkService {
                 }
             }
         }
-        System.out.print("Delete " + file.getAbsolutePath() + ": ");
-        boolean delete = file.delete();
-        System.out.println(delete);
+        file.delete();
     }
 
     @Override
@@ -163,7 +164,7 @@ public class TalkServiceImpl implements TalkService {
             byte[] bytes = decoder.decodeBuffer(fileInBase64);
             writeFile(message.getNameAttachedFile(), bytes, talk.getId(), message.getAuthor().getId(), message.getDate());
         } catch (IOException e) {
-            System.out.println("Ошибка при загрузке: " + e.getMessage());
+            logger.error("Ошибка при загрузке: {}", e.getMessage());
             message.setNameAttachedFile("");
         }
         return writeMessage(message, talk.getId());
@@ -177,7 +178,7 @@ public class TalkServiceImpl implements TalkService {
                 writeFile(file.getOriginalFilename(), bytes, idTalk, idAuthor, date);
                 return true;
             } catch (Exception e) {
-                System.out.println("Ошибка при загрузке: " + e.getMessage());
+                logger.error("Ошибка при загрузке: {}", e.getMessage());
             }
         }
         return false;
@@ -214,28 +215,27 @@ public class TalkServiceImpl implements TalkService {
         return new File(path);
     }
 
-   /* @Override
-    public List<Message> getMessages(Talk talk) {
-        long talkId = getIdTalks(talk);
-        return messageRepository.findByIdTalk(talkId);
-    }*/
-
     @Override
     public List<Message> getMessages(long idTalk) {
         return messageRepository.findByIdTalk(idTalk);
     }
 
     @Override
-    public void deleteMessageById(String idMessage) {
+    public boolean deleteMessageById(String idMessage, long idUser) {
         Message message = messageRepository.findById(idMessage).orElse(null);
         if (message != null) {
+            if (message.getAuthor().getId() != idUser) {
+                return false;
+            }
             if (message.getNameAttachedFile() != null && !message.getNameAttachedFile().equals("")) {
                 String path = getPathToMessageFile(message.getIdTalk(), message);
                 File file = new File(path);
                 deleteDirectory(file);
             }
             messageRepository.deleteById(idMessage);
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -268,17 +268,6 @@ public class TalkServiceImpl implements TalkService {
     private Talk findDialogByUsers(User firstUser, User secondUser) {
         String nameTalk = firstUser.getFullName() + " - " + secondUser.getFullName();
         List<Talk> talks = talkRepository.findTalksByNameAndOwner(nameTalk, firstUser);
-        /*if(talks != null && !talks.isEmpty()) {
-            for(Talk talk : talks){
-                System.out.println(talk);
-                if (talk.getUsers().contains(firstUser)
-                        && talk.getUsers().contains(secondUser)) {
-                    System.out.println("contain!");
-                    return talk;
-                }
-            }
-        }
-        return null;*/
         return talks.stream()
                 .filter(talk -> talk.getUsers().size() == 2 &&
                         talk.getUsers().contains(firstUser) &&
@@ -299,12 +288,4 @@ public class TalkServiceImpl implements TalkService {
     private String getTalkDirectory(long idTalk) {
         return "Talks" + File.separator + idTalk + File.separator;
     }
-
-   /* private long getIdTalks(Talk talk) {
-        if (talk.getId() == 0) {
-            talk = talkRepository.findTalksByNameAndOwner(talk.getName(), talk.getOwner());
-        }
-        return talk.getId();
-    }*/
-
 }

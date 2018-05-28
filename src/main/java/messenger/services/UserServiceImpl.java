@@ -93,15 +93,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUserContact(long idUser, long idContactUser) {
+    public User addUserContact(long idUser, long idContactUser) {
         User user = userRepository.findById(idUser).orElse(null);
         User addUser = userRepository.findById(idContactUser).orElse(null);
         if (user == null || addUser == null) {
-            return false;
+            return null;
         }
         user.addContact(addUser);
         userRepository.save(user);
-        return true;
+        return addUser;
     }
 
     @Override
@@ -115,7 +115,6 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return false;
         }
-        //Hibernate.initialize(user.getRoles());
         Role role = roleRepository.findRoleByAuthority(roleType.toString());
         user.addRole(role);
         userRepository.save(user);
@@ -143,6 +142,12 @@ public class UserServiceImpl implements UserService {
     public boolean isUserInContact(User user, long idUserContact){
         Set<User> contacts = user.getUserContacts();
         return contacts.stream().anyMatch(contact -> contact.getId() == idUserContact);
+    }
+
+    @Override
+    public boolean isUserInRole(User user, RoleType roleType){
+        Set<Role> roles = user.getRoles();
+        return roles.stream().anyMatch(role -> role.getAuthority().equals(roleType.toString()));
     }
 
     @Override

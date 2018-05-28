@@ -1,11 +1,27 @@
 package messenger.controller.form;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 public class UserForm {
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Pattern(regexp = "([a-zA-Z])([a-zA-Z0-9_])*",
+            message = "Login can contains only latin letters, numbers and \'_\', first symbol must be a letter")
     private String login;
-    private String firstName;
-    private String lastName;
-    private String email;
+
+    @Valid
+    private EditUserForm editUserData;
+
+    @NotNull
+    @Size(min = 3, max = 30, message = "Password must have between 1 and 30 symbols")
     private String password;
+
+    @NotNull
+    @Size(min = 3, max = 30, message = "Password must have between 1 and 30 symbols")
     private String confirmPassword;
 
     public String getLogin() {
@@ -17,42 +33,38 @@ public class UserForm {
     }
 
     public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        return editUserData.getFirstName();
     }
 
     public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+        return editUserData.getLastName();
     }
 
     public String getEmail() {
-        return email;
+        return editUserData.getEmail();
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public EditUserForm getEditUserData() {
+        return editUserData;
     }
 
-    public String getPassword() {
-        return password;
+    public void setEditUserData(EditUserForm editUserData) {
+        this.editUserData = editUserData;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
     }
 }
