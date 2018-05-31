@@ -32,7 +32,7 @@
         <div class="container" id="users" style="width: 440px">
             <div class="list-group">
                 <div th:each="contact : ${users}" th:if="${contact.login} != ${owner_login}">
-                    <div class="list-group-item" th:id="${contact.id}" onclick="changeChoose(event)">
+                    <div class="list-group-item" th:id="${contact.id}" onclick="changeChoose(this)">
                         <input type="checkbox" th:id="|${contact.id}-check|" name="check" th:field="*{users}"
                                th:value="${contact.login}" class="hidden">
                         <span style="text-align: left"

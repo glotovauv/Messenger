@@ -1,5 +1,5 @@
-function changeChoose(event) {
-    var box = event.target;
+function changeChoose(element) {
+    var box = element;
     var check = document.getElementById(box.id + "-check");
     if (check){
         check.checked = !check.checked;

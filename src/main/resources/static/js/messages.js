@@ -239,10 +239,10 @@ function deleteMessage(event) {
     event.preventDefault();
 }
 
-messageForm.addEventListener('submit', sendMessage, true);
+messageForm.addEventListener('submit', sendMessage, false);
 fileInput.addEventListener('change', changeFile, false);
 fileDelete.addEventListener('click', deleteFile, false);
 [].forEach.call(deleteForms, function (element) {
-    element.addEventListener('submit', deleteMessage, true);
+    element.addEventListener('submit', deleteMessage, false);
 });
 connect();

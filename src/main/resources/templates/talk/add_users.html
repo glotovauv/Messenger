@@ -15,14 +15,10 @@
 <br/>
 <form th:action="@{/add_users_in_talk}" th:object="${talkForm}" method="post">
     <input type="hidden" id="id_talk" th:name="idTalk" th:value="${talk.id}"/>
-  <!--  <p th:each="contact : ${users}" th:if="${not #lists.contains(talk.users, contact)}">
-        <input type="checkbox" th:field="*{users}" th:value="${contact.login}"
-               th:text="| ${contact.firstName} ${contact.lastName}|">
-    </p>-->
     <div class="container" id="users" style="width: 40%">
         <div class="list-group">
             <div th:each="contact : ${users}" th:if="${not #lists.contains(talkUsers, contact.login)}">
-                <div class="list-group-item" th:id="${contact.id}" onclick="changeChoose(event)">
+                <div class="list-group-item" th:id="${contact.id}" onclick="changeChoose(this)">
                     <input type="checkbox" th:id="|${contact.id}-check|" name="check" th:field="*{users}"
                            th:value="${contact.login}" class="hidden">
                     <span style="text-align: left"
